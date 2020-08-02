@@ -11,7 +11,9 @@ try:
 
     monitor_logger.setLevel(logging.WARNING)
 except Exception as e:
-    traceback.print_exc()
+    # traceback.print_exc()
+    monitor_logger = logging.getLogger()
+    monitor_logger.setLevel(logging.WARNING)
 
 import os
 import os.path as osp
@@ -72,7 +74,12 @@ class GymEnv(Env, Serializable):
         # the time limit specified for each environment has been passed and
         # therefore the environment is not Markovian (terminal condition depends
         # on time rather than state).
-        env = env.env
+        if 'Fetch' in env_name or 'Bulldog' in env_name:
+            from gym.wrappers import FilterObservation, FlattenObservation
+            dict_keys = ['observation', 'achieved_goal', 'desired_goal']
+            env = FlattenObservation(FilterObservation(env, dict_keys))
+        else:
+            env = env.env
 
         self.env = env
         self.env_id = env.spec.id
@@ -94,7 +101,7 @@ class GymEnv(Env, Serializable):
         logger.log("observation space: {}".format(self._observation_space))
         self._action_space = convert_gym_space(env.action_space)
         logger.log("action space: {}".format(self._action_space))
-        self._horizon = env.spec.tags['wrapper_config.TimeLimit.max_episode_steps']
+        self._horizon = env.spec.max_episode_steps
         self._log_dir = log_dir
         self._force_reset = force_reset
 
@@ -124,7 +131,10 @@ class GymEnv(Env, Serializable):
         return Step(next_obs, reward, done, **info)
 
     def render(self, mode='human', close=False):
-        return self.env._render(mode, close)
+        if hasattr(self.env, '_render'):
+            return self.env._render(mode, close)
+        else:
+            return self.env.render(mode)
         # self.env.render()
 
     def terminate(self):

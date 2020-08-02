@@ -33,7 +33,7 @@ SHARED_PARAMS = {
     'n_train_repeat': 1,
     'epoch_length': 1000,
     'snapshot_mode': 'gap',
-    'snapshot_gap': 10,
+    'snapshot_gap': 500,
     'sync_pkl': True,
     'num_skills': 50,
     'scale_entropy': 0.1,
@@ -130,6 +130,24 @@ ENV_PARAMS = {
         'n_epochs': 1000,
         'scale_entropy': 0.1,
     },
+    'fetch-reach': {
+        'prefix': 'fetch-reach',
+        'env_name': 'FetchReach-v1',
+        'max_path_length': 1000,
+        'n_epochs': 10000,
+    },
+    'fetch-pnp': {
+        'prefix': 'fetch-pnp',
+        'env_name': 'FetchPickAndPlace-v1',
+        'max_path_length': 1000,
+        'n_epochs': 10000
+    },
+    'bulldog-pnp': {
+        'prefix': 'bulldog-pnp',
+        'env_name': 'bulldog_gym:BulldogPickAndPlace-v0',
+        'max_path_length': 1000,
+        'n_epochs': 10000
+    }
 }
 DEFAULT_ENV = 'swimmer'
 AVAILABLE_ENVS = list(ENV_PARAMS.keys())
